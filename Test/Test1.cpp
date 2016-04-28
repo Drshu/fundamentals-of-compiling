@@ -6,6 +6,7 @@ char prog[80],token[9];//The number array token maximal leath with is 9
 char ch;
 int syn,p,m,n,sum;
 char * rwtab[6] = {"function","if","then","while","do","endfunc"};
+char number[20];
 
 void scaner();
 int main(){
@@ -36,7 +37,7 @@ int main(){
 	do{
 		scaner();
 	switch(syn){
-	case 11:printf("\n (%d,%d)",syn,sum);
+	case 11:printf("\n (%d,%s)",syn,number);
 		break;
 	case -1: printf("\n error");
 		break;
@@ -50,7 +51,8 @@ int main(){
 }
 
 void scaner(){
-	int flag = 0;//
+
+	int i = 0;
 	for(n=0;n<9;n++)
 		token[n] = NULL;//将token置空
 		ch  = prog[p++];
@@ -80,10 +82,17 @@ void scaner(){
 				if (ch >= '0' && ch <= '9')
 				{
 					sum = 0;
-					while ((ch >= '0'&&ch <= '9'&& ch == '.')||flag==0)
+					number[i++] = ch;
+					while ((ch >= '0'&& ch <= '9')||ch == '.' || ch == 'e' || ch == 'E')
 					{
-						sum = sum * 10 + ch - '0';
-						ch = prog[++p];
+						
+						//sum = sum * 10 + ch - '0';
+						ch = prog[p++];if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
+							
+						{
+							number[i++] = ch;
+						}
+						
 					}
 					/*ch = prog[--p];*/
 					p--;
