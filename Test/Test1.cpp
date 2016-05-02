@@ -53,6 +53,7 @@ int main(){
 void scaner(){
 
 	int i = 0;
+	int k = 0;
 	for(n=0;n<9;n++)
 		token[n] = NULL;//将token置空
 		ch  = prog[p++];
@@ -79,7 +80,7 @@ void scaner(){
 				}
 			}
 			else
-				if (ch >= '0' && ch <= '9')
+				if ((ch >= '0' && ch <= '9')||ch=='.')
 				{
 					sum = 0;
 					number[i++] = ch;
@@ -87,7 +88,8 @@ void scaner(){
 					{
 						
 						//sum = sum * 10 + ch - '0';
-						ch = prog[p++];if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
+						ch = prog[p++];
+						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
 							
 						{
 							number[i++] = ch;
@@ -158,9 +160,57 @@ void scaner(){
 							syn = -1;
 						break;
 
+// 					case'.':
+// 						token[m++] = ch;
+// 						ch = prog[p++];
+// 						if (ch>='0' && ch<='9')
+// 						{
+// 							number[i++] = ch;
+// 							while ((ch >= '0' && ch <= '9')||ch == 'e' || ch=='E')
+// 							{
+// 								ch = prog[p++];
+// 								if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
+// 
+// 								{
+// 									number[i++] = ch;
+// 								}
+// 							}
+// 						}
+
 					case'+':syn = 13; token[m++] = ch;
 						break;
-					case'-':syn = 14; token[m++] = ch;
+					case'-': i = p - 2;
+						
+						number[k++] = '-';
+						do
+						{
+							
+							if ((prog[i] >= '!' &&prog[i] <= '/') || (prog[i] >= ':' && prog[i] <= '@') || (prog[i] >= '{' &&prog[i] <= '~'))//若之前为逻辑符号，则为负号
+							{
+								ch = prog[p++];
+								number[k++] = ch;
+								while ((ch >= '0' && ch <= '9') || ch == 'e' || ch == 'E')
+								{
+									ch = prog[p++];
+									if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
+
+									{
+										number[k++] = ch;
+									}
+									ch = prog[p++];
+									p--;
+									syn = 11;
+									
+								}
+							}
+							else
+								if (prog[i]!=' ' && prog[i]!='\n') {
+									syn = 14;
+									token[m++] = ch;
+									break;
+									i--;
+								}
+						} while (prog[i] == ' ' && prog[i] == '\n');
 						break;
 					case'*':syn = 15; token[m++] = ch;
 						break;
