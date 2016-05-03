@@ -9,7 +9,7 @@ char * rwtab[6] = {"function","if","then","while","do","endfunc"};
 char number[20];
 
 void scaner();
-int main(){
+int main() {
 	int chose = 0;
 	int i;
 	printf("please choose the way to analyse\n 1.Use the Terminal 2.Use the file\n");
@@ -26,29 +26,55 @@ int main(){
 	else {
 
 		FILE *fp = NULL;
-		
+		FILE *fp2 = NULL;
 		fp = fopen("C:\\Users\\Shu\\Desktop\\testData.txt", "r");
 		{
 			for (i = 0; fscanf(fp, "%c", prog + i) != EOF; i++);
 		}
+		fp2 = fopen("C:\\Users\\Shu\\Desktop\\output.txt", "w+");//以创建模式打开，可以清空之前的内容
 		fclose(fp);
+		fclose(fp2);
 	}
 	p = 0;
-	do{
+	do {
 		scaner();
-	switch(syn){
-	case 11:printf("\n (%d,%s)",syn,number);
-		break;
-	case -1: printf("\n error");
-		break;
-	default:
-		printf("\n (%d,%s)",syn,token);
+		if (chose == 1)
+		{
+			switch (syn) {
+			case 11:printf("\n (%d,%s)", syn, number);
+				for (i = 0; i < 20; i++)//将number数字置空，否则会输出多余的数据
+					number[i] = NULL;
 
+				break;
+			case -1: printf("\n error");
+				break;
+			default:
+				printf("\n (%d,%s)", syn, token);
+
+			}
+		}
+		else
+		{
+			freopen("C:\\Users\\Shu\\Desktop\\output.txt", "a+", stdout);
+			switch (syn) {
+			case 11:printf("\n (%d,%s)", syn, number);
+				for (i = 0; i < 20; i++)//将number数字置空，否则会输出多余的数据
+					number[i] = NULL;
+
+				break;
+			case -1: printf("\n error");
+				break;
+			default:
+				printf("\n (%d,%s)", syn, token);
+			
+			}
+			
+		}
 	}
-	}
-		while(syn != 0);
-	return 0;
+		while (syn != 0);
+		return 0;
 }
+
 
 void scaner(){
 
@@ -57,8 +83,9 @@ void scaner(){
 	for(n=0;n<9;n++)
 		token[n] = NULL;//将token置空
 		ch  = prog[p++];
+
 		m = 0;
-		while ((ch == ' ') || (ch == '\n'))
+		while ((ch == ' ') || (ch == '\n')|| (ch == '\t'))
 			ch = prog[p++];//处理空格和换行符
 		
 			if ((ch >= 'a' &&ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
@@ -83,18 +110,14 @@ void scaner(){
 				if ((ch >= '0' && ch <= '9')||ch=='.')
 				{
 					sum = 0;
-					number[i++] = ch;
-					while ((ch >= '0'&& ch <= '9')||ch == '.' || ch == 'e' || ch == 'E')
+					number[i++] = ch;//将第一个数字或小数点放入数组
+					while ((ch >= '0'&& ch <= '9')||ch == '.' || ch == 'e' || ch == 'E')//循环到没有数字、“.”、“E”既识别完这一个实数
 					{
 						
 						//sum = sum * 10 + ch - '0';
-						ch = prog[p++];
-						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
-							
-						{
+						ch = prog[p++];//将下一个字符放入ch
+						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')//判断是否为符合要求的字符，若不判断，之后的任何字符都会放入number中并输出
 							number[i++] = ch;
-						}
-						
 					}
 					/*ch = prog[--p];*/
 					p--;
@@ -102,7 +125,7 @@ void scaner(){
 
 				}
 				else {
-					switch (ch) {
+					switch (ch) {//主要处理各种逻辑符号
 					case '<':m = 0;
 						token[m++] = ch;
 						ch = prog[++p];
@@ -181,15 +204,15 @@ void scaner(){
 						break;
 					case'-': i = p - 2;
 						
-						number[k++] = '-';
+						number[k++] = '-';//先将读到的“-”放入number
 						do
 						{
-							
 							if ((prog[i] >= '!' &&prog[i] <= '/') || (prog[i] >= ':' && prog[i] <= '@') || (prog[i] >= '{' &&prog[i] <= '~'))//若之前为逻辑符号，则为负号
+							//判断之前一个字符是不是逻辑符号，若为逻辑符号，则为负号
 							{
 								ch = prog[p++];
 								number[k++] = ch;
-								while ((ch >= '0' && ch <= '9') || ch == 'e' || ch == 'E')
+								while ((ch >= '0' && ch <= '9') || ch == 'e' || ch == 'E')//与识别实数的方法相同
 								{
 									ch = prog[p++];
 									if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
@@ -197,14 +220,14 @@ void scaner(){
 									{
 										number[k++] = ch;
 									}
-									ch = prog[p++];
+									//ch = prog[p++];
 									p--;
 									syn = 11;
 									
 								}
 							}
 							else
-								if (prog[i]!=' ' && prog[i]!='\n') {
+								if (prog[i]!=' ' && prog[i]!='\n') {//之前若为其他符号，则为减号，单独进行处理
 									syn = 14;
 									token[m++] = ch;
 									break;
