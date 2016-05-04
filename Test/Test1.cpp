@@ -6,17 +6,20 @@ char prog[80],token[9];//The number array token maximal leath with is 9
 char ch;
 int syn,p,m,n,sum;
 char * rwtab[6] = {"function","if","then","while","do","endfunc"};
-char number[20];
+char number[50];
 
 void scaner();
 int main() {
 	int chose = 0;
 	int i;
+
 	printf("please choose the way to analyse\n 1.Use the Terminal 2.Use the file\n");
 	scanf("%d", &chose);
 	if (chose == 1) {
 		printf("\n please input string:\n");
+		getchar();
 		do {
+
 			scanf("%c", &ch);
 			prog[p++] = ch;
 		}
@@ -42,11 +45,13 @@ int main() {
 		{
 			switch (syn) {
 			case 11:printf("\n (%d,%s)", syn, number);
-				for (i = 0; i < 20; i++)//将number数字置空，否则会输出多余的数据
+				for (i = 0; i < 50; i++)//将number数字置空，否则会输出多余的数据
 					number[i] = NULL;
-
+				
+				
 				break;
-			case -1: printf("\n error");
+			case -1: 
+				printf("\n error");
 				break;
 			default:
 				printf("\n (%d,%s)", syn, token);
@@ -80,8 +85,13 @@ void scaner(){
 
 	int i = 0;
 	int k = 0;
-	for(n=0;n<9;n++)
+	int j = 0;
+	char temp[9];
+	for (n = 0; n < 9; n++)
+	{
 		token[n] = NULL;//将token置空
+		temp[n] = NULL;
+	}
 		ch  = prog[p++];
 
 		m = 0;
@@ -116,8 +126,21 @@ void scaner(){
 						
 						//sum = sum * 10 + ch - '0';
 						ch = prog[p++];//将下一个字符放入ch
-						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')//判断是否为符合要求的字符，若不判断，之后的任何字符都会放入number中并输出
-							number[i++] = ch;
+// 						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')//判断是否为符合要求的字符，若不判断，之后的任何字符都会放入number中并输出
+// 							number[i++] = ch;
+						if (ch == 'e' || ch == 'E')//识别科学计数法的之后的幂次数
+						{
+							temp[j++] = ch;//将e和e之后的所有字符存入temp数组
+							ch = prog[p++];
+							while ((ch >= '0'&& ch <= '9') || ch == '.' || ch == '-')
+							{
+								temp[j++] = ch;
+								ch = prog[p++];
+								
+							}
+							strcat(number, temp);//将两个数组连接并输出
+							break;
+						}
 					}
 					/*ch = prog[--p];*/
 					p--;
@@ -202,29 +225,48 @@ void scaner(){
 
 					case'+':syn = 13; token[m++] = ch;
 						break;
-					case'-': i = p - 2;
+					case'-': 
+						
+						i = p - 2;
 						
 						number[k++] = '-';//先将读到的“-”放入number
 						do
 						{
+						
 							if ((prog[i] >= '!' &&prog[i] <= '/') || (prog[i] >= ':' && prog[i] <= '@') || (prog[i] >= '{' &&prog[i] <= '~'))//若之前为逻辑符号，则为负号
 							//判断之前一个字符是不是逻辑符号，若为逻辑符号，则为负号
 							{
 								ch = prog[p++];
 								number[k++] = ch;
-								while ((ch >= '0' && ch <= '9') || ch == 'e' || ch == 'E')//与识别实数的方法相同
+								while ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')//循环到没有数字、“.”、“E”既识别完这一个实数
 								{
-									ch = prog[p++];
-									if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')
-
-									{
-										number[k++] = ch;
-									}
-									//ch = prog[p++];
-									p--;
-									syn = 11;
 									
+									//sum = sum * 10 + ch - '0';
+									
+												   // 						if ((ch >= '0'&& ch <= '9') || ch == '.' || ch == 'e' || ch == 'E')//判断是否为符合要求的字符，若不判断，之后的任何字符都会放入number中并输出
+												   // 							number[i++] = ch;
+									if (ch == 'e' || ch == 'E')//识别科学计数法的之后的幂次数
+									{
+										temp[j++] = ch;
+										ch = prog[p++];
+										while ((ch >= '0'&& ch <= '9') || ch == '.' || ch == '-')
+										{
+											temp[j++] = ch;
+											ch = prog[p++];
+
+										}
+										strcat(number, temp);
+										break;
+									}
+									else
+									{
+										number[i++] = ch;
+									}
+									ch = prog[p++];//将下一个字符放入ch
 								}
+								p--;
+								syn = 11;
+								break;
 							}
 							else
 								if (prog[i]!=' ' && prog[i]!='\n') {//之前若为其他符号，则为减号，单独进行处理
