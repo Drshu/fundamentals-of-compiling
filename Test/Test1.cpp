@@ -2,7 +2,7 @@
 #include<string.h>
 #include <stdlib.h>
 
-char prog[80],token[9];//The number array token maximal leath with is 9
+char prog[1000],token[9];//The number array token maximal leath with is 9
 char ch;
 int syn,p,m,n,sum;
 char * rwtab[6] = {"function","if","then","while","do","endfunc"};
@@ -17,7 +17,7 @@ int main() {
 	scanf("%d", &chose);
 	if (chose == 1) {
 		printf("\n please input string:\n");
-		getchar();
+		getchar();//将之前选择模式时候输入的换行符吃掉。否则后面会处理这个换行符
 		do {
 
 			scanf("%c", &ch);
@@ -28,8 +28,8 @@ int main() {
 	}
 	else {
 
-		FILE *fp = NULL;
-		FILE *fp2 = NULL;
+		FILE *fp = NULL;//输入文件
+		FILE *fp2 = NULL;//输出文件
 		fp = fopen("C:\\Users\\Shu\\Desktop\\testData.txt", "r");
 		{
 			for (i = 0; fscanf(fp, "%c", prog + i) != EOF; i++);
